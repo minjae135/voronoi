@@ -569,11 +569,20 @@ button:focus-visible,select:focus-visible,input:focus-visible+.custom-check,.dia
   width: 100%;
   height: auto;
   aspect-ratio: 25/17;
-  touch-action: manipulation;
+  touch-action: none;
 }
 
 .diagram.is-placing {
   cursor: crosshair;
+  touch-action: none;
+}
+
+.diagram.is-near-site {
+  cursor: grab;
+}
+
+.diagram.is-dragging {
+  cursor: grabbing;
   touch-action: none;
 }
 
@@ -606,6 +615,16 @@ button:focus-visible,select:focus-visible,input:focus-visible+.custom-check,.dia
   stroke-width: 2.4;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.delaunay-edge.is-voronoi-boundary {
+  stroke-dasharray: none;
+}
+
+.delaunay-edge.is-other-edge {
+  stroke: #9188e4;
+  stroke-dasharray: 7 6;
+  opacity: .9;
 }
 
 .perpendicular-bisector {
@@ -757,6 +776,26 @@ button:focus-visible,select:focus-visible,input:focus-visible+.custom-check,.dia
   gap: 6px;
   color: #808a9c;
   font-size: 9px;
+}
+
+.triangulation-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.triangulation-legend[hidden] {
+  display: none;
+}
+
+.legend-line-solid,
+.legend-line-dashed {
+  width: 14px;
+  border-top: 2px solid #8073e8;
+}
+
+.legend-line-dashed {
+  border-top-style: dashed;
 }
 
 .legend-point {

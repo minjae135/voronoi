@@ -43,7 +43,15 @@
             <div id="empty-prompt" class="empty-prompt"><div class="empty-orbit" aria-hidden="true"><span></span><i></i><b></b></div><strong>화면이 준비됐어요</strong><span>왼쪽에서 <em>생성점 찍기</em>를 켜고<br />원하는 곳을 눌러 보세요.</span></div>
             <div class="axis-label axis-label-x" aria-hidden="true">공간을 가까움으로 나누기</div><div class="axis-label axis-label-y" aria-hidden="true">DISTANCE FIELD</div>
           </div>
-          <footer class="stage-footer"><span class="legend-item"><i class="legend-point" aria-hidden="true"></i> 생성점</span><span class="legend-item"><i class="legend-cell" aria-hidden="true"></i> 가장 가까운 영역</span><span id="stage-status" class="stage-status"><span class="status-dot"></span> 점 추가 대기 중</span></footer>
+          <footer class="stage-footer">
+            <span class="legend-item"><i class="legend-point" aria-hidden="true"></i> 생성점</span>
+            <span class="legend-item"><i class="legend-cell" aria-hidden="true"></i> 가장 가까운 영역</span>
+            <span id="triangulation-legend" class="triangulation-legend" hidden>
+              <span class="legend-item"><i class="legend-line-solid" aria-hidden="true"></i> 화면 내 경계와 대응</span>
+              <span class="legend-item"><i class="legend-line-dashed" aria-hidden="true"></i> 화면 내 경계 없음</span>
+            </span>
+            <span id="stage-status" class="stage-status"><span class="status-dot"></span> 점 추가 대기 중</span>
+          </footer>
         </section>
         <p class="workspace-note">각 색 영역은 한 생성점에 더 가까운 위치들을 모은 곳이에요.</p>
       </main>

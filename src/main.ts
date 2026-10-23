@@ -24,6 +24,7 @@ const emptyPrompt = document.querySelector<HTMLDivElement>('#empty-prompt')!;
 const stageCaption = document.querySelector<HTMLElement>('#stage-caption')!;
 const stageCount = document.querySelector<HTMLElement>('#stage-count')!;
 const stageStatus = document.querySelector<HTMLElement>('#stage-status')!;
+const triangulationLegend = document.querySelector<HTMLSpanElement>('#triangulation-legend')!;
 
 let points: Point[] = [];
 let nextPointId = 1;
@@ -32,6 +33,7 @@ let animationState: AnimationState = 'idle';
 let animationElapsed = 0;
 let lastFrameTime = 0;
 let animationFrame = 0;
+let draggingPointId: number | null = null;
 let diagram: Diagram = buildDiagram(points, WIDTH, HEIGHT);
 let maxWaveRadius = 1;
 
@@ -47,16 +49,49 @@ function setPointMode(active: boolean): void {
   pointModeActive = active;
   pointModeButton.setAttribute('aria-pressed', String(active));
   pointButtonLabel.textContent = active ? '점 찍기 활성화됨' : '생성점 찍기';
-  pointHint.textContent = active ? '오른쪽 화면을 눌러 점을 추가하세요.' : '버튼을 켠 뒤 오른쪽 화면을 눌러 보세요.';
   svg.classList.toggle('is-placing', active);
+  svg.classList.remove('is-near-site');
+  updatePointHint();
   updateStageStatus();
 }
 
-function addPoint(clientX: number, clientY: number): void {
+function updatePointHint(): void {
+  if (pointModeActive) {
+    pointHint.textContent = '오른쪽 화면을 눌러 점을 추가하세요.';
+  } else if (points.length > 0) {
+    pointHint.textContent = '점 찍기 모드가 꺼져 있어요. 생성점을 끌어 옮길 수 있어요.';
+  } else {
+    pointHint.textContent = '버튼을 켠 뒤 오른쪽 화면을 눌러 보세요.';
+  }
+}
+
+function toDiagramPoint(clientX: number, clientY: number): { x: number; y: number } | null {
   const bounds = svg.getBoundingClientRect();
-  if (bounds.width === 0 || bounds.height === 0) return;
-  const x = Math.min(WIDTH - 16, Math.max(16, ((clientX - bounds.left) / bounds.width) * WIDTH));
-  const y = Math.min(HEIGHT - 16, Math.max(16, ((clientY - bounds.top) / bounds.height) * HEIGHT));
+  if (bounds.width === 0 || bounds.height === 0) return null;
+  return {
+    x: Math.min(WIDTH - 16, Math.max(16, ((clientX - bounds.left) / bounds.width) * WIDTH)),
+    y: Math.min(HEIGHT - 16, Math.max(16, ((clientY - bounds.top) / bounds.height) * HEIGHT)),
+  };
+}
+
+function findPointAt(clientX: number, clientY: number): Point | null {
+  const position = toDiagramPoint(clientX, clientY);
+  const bounds = svg.getBoundingClientRect();
+  if (!position || bounds.width === 0) return null;
+  const hitRadius = Math.max(14, 18 * WIDTH / bounds.width);
+  let nearest: Point | null = null;
+  let nearestDistance = hitRadius;
+  for (const point of points) {
+    const distance = Math.hypot(point.x - position.x, point.y - position.y);
+    if (distance <= nearestDistance) { nearest = point; nearestDistance = distance; }
+  }
+  return nearest;
+}
+
+function addPoint(clientX: number, clientY: number): void {
+  const position = toDiagramPoint(clientX, clientY);
+  if (!position) return;
+  const { x, y } = position;
   if (points.some((point) => Math.hypot(point.x - x, point.y - y) < MIN_POINT_SPACING)) {
     pointHint.textContent = '점이 너무 가까워요. 조금 떨어진 곳을 눌러 주세요.';
     return;
@@ -65,6 +100,27 @@ function addPoint(clientX: number, clientY: number): void {
   animationState = 'idle';
   animationElapsed = 0;
   points = [...points, { id: nextPointId++, x, y }];
+  updateDiagram();
+  updateControls();
+  render();
+}
+
+function movePoint(id: number, clientX: number, clientY: number): void {
+  const position = toDiagramPoint(clientX, clientY);
+  if (!position) return;
+  const current = points.find((point) => point.id === id);
+  if (!current || Math.hypot(current.x - position.x, current.y - position.y) < 0.2) return;
+  const tooClose = points.some((point) => point.id !== id && Math.hypot(point.x - position.x, point.y - position.y) < MIN_POINT_SPACING);
+  if (tooClose) {
+    pointHint.textContent = '생성점끼리 너무 가까워요. 조금 떨어진 곳으로 옮겨 주세요.';
+    return;
+  }
+  if (animationState !== 'idle') {
+    stopAnimation();
+    animationState = 'idle';
+    animationElapsed = 0;
+  }
+  points = points.map((point) => point.id === id ? { ...point, ...position } : point);
   updateDiagram();
   updateControls();
   render();
@@ -122,11 +178,13 @@ function togglePlayback(): void {
 }
 
 function updateControls(): void {
+  updatePointHint();
   pointCount.textContent = String(points.length);
   stageCount.textContent = `${points.length} ${points.length === 1 ? 'SITE' : 'SITES'}`;
   playButton.disabled = points.length === 0;
   bisectorModeWrap.hidden = !bisectorToggle.checked;
   emptyPrompt.hidden = points.length > 0;
+  triangulationLegend.hidden = !triangulationToggle.checked;
   if (animationState === 'running') {
     playLabel.textContent = '일시정지'; playIcon.textContent = 'Ⅱ';
     animationHint.textContent = '파동이 경계에 닿으면 멈춰요.';
@@ -186,11 +244,7 @@ function render(): void {
     return `<line x1="${visible.start.x}" y1="${visible.start.y}" x2="${visible.end.x}" y2="${visible.end.y}" class="voronoi-edge" opacity="${isAnimating ? 0.94 : 0.78}" />`;
   }).join('');
 
-  const triangles = triangulationToggle.checked ? diagram.triangles.map((triangle) => {
-    const a = points[triangle.a]; const b = points[triangle.b]; const c = points[triangle.c];
-    return `<polygon points="${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}" class="delaunay-triangle" />
-      <path d="M ${a.x} ${a.y} L ${b.x} ${b.y} L ${c.x} ${c.y} Z" class="delaunay-edge" />`;
-  }).join('') : '';
+  const triangles = triangulationToggle.checked ? renderTriangulation() : '';
 
   const bisectors = bisectorToggle.checked ? renderBisectors() : '';
   const markers = points.map((point, index) => {
@@ -205,6 +259,33 @@ function render(): void {
     <g class="triangulation-layer">${triangles}</g><g class="bisector-layer">${bisectors}</g><g class="site-layer">${markers}</g>`;
   svg.setAttribute('aria-label', points.length === 0 ? '생성점을 추가하면 보로노이 다이어그램이 표시됩니다.' : `생성점 ${points.length}개가 있는 보로노이 다이어그램`);
   updateStageStatus();
+}
+
+function renderTriangulation(): string {
+  const boundaryPairs = new Set(diagram.neighbors.map(([a, b]) => String(Math.min(a, b)) + ':' + String(Math.max(a, b))));
+  const lineMap = new Map<string, { a: Point; b: Point; isVisibleVoronoiBoundary: boolean }>();
+  const fills = diagram.triangles.map((triangle) => {
+    const a = points[triangle.a];
+    const b = points[triangle.b];
+    const c = points[triangle.c];
+    const pairs: Array<[number, number]> = [[triangle.a, triangle.b], [triangle.b, triangle.c], [triangle.c, triangle.a]];
+    for (const [firstIndex, secondIndex] of pairs) {
+      const low = Math.min(firstIndex, secondIndex);
+      const high = Math.max(firstIndex, secondIndex);
+      const key = String(low) + ':' + String(high);
+      if (!lineMap.has(key)) {
+        lineMap.set(key, { a: points[low], b: points[high], isVisibleVoronoiBoundary: boundaryPairs.has(key) });
+      }
+    }
+    return '<polygon points="' + a.x + ',' + a.y + ' ' + b.x + ',' + b.y + ' ' + c.x + ',' + c.y + '" class="delaunay-triangle" />';
+  }).join('');
+
+  const edges = [...lineMap.values()].map(({ a, b, isVisibleVoronoiBoundary }) => {
+    const edgeStyle = isVisibleVoronoiBoundary ? 'is-voronoi-boundary' : 'is-other-edge';
+    return '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '" class="delaunay-edge ' + edgeStyle + '" />';
+  }).join('');
+
+  return fills + edges;
 }
 
 function renderBisectors(): string {
@@ -263,14 +344,39 @@ function pointLabel(index: number): string {
 
 pointModeButton.addEventListener('click', () => setPointMode(!pointModeActive));
 playButton.addEventListener('click', togglePlayback);
-triangulationToggle.addEventListener('change', render);
+triangulationToggle.addEventListener('change', () => { updateControls(); render(); });
 bisectorToggle.addEventListener('change', () => { updateControls(); render(); });
 bisectorMode.addEventListener('change', render);
 svg.addEventListener('pointerdown', (event: PointerEvent) => {
-  if (!pointModeActive) return;
+  if (pointModeActive) {
+    event.preventDefault();
+    addPoint(event.clientX, event.clientY);
+    return;
+  }
+  const point = findPointAt(event.clientX, event.clientY);
+  if (!point) return;
   event.preventDefault();
-  addPoint(event.clientX, event.clientY);
+  draggingPointId = point.id;
+  svg.classList.add('is-dragging');
+  svg.setPointerCapture(event.pointerId);
 });
+svg.addEventListener('pointermove', (event: PointerEvent) => {
+  if (draggingPointId !== null) {
+    event.preventDefault();
+    movePoint(draggingPointId, event.clientX, event.clientY);
+  } else if (!pointModeActive) {
+    svg.classList.toggle('is-near-site', findPointAt(event.clientX, event.clientY) !== null);
+  }
+});
+function finishPointDrag(event: PointerEvent): void {
+  if (draggingPointId === null) return;
+  draggingPointId = null;
+  svg.classList.remove('is-dragging');
+  if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+}
+svg.addEventListener('pointerup', finishPointDrag);
+svg.addEventListener('pointercancel', finishPointDrag);
+svg.addEventListener('lostpointercapture', finishPointDrag);
 svg.addEventListener('keydown', (event: KeyboardEvent) => {
   if (!pointModeActive || (event.key !== 'Enter' && event.key !== ' ')) return;
   event.preventDefault();
