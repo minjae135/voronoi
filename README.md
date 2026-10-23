@@ -32,7 +32,7 @@ npm run preview
 
 ## GitHub Pages
 
-Vite 설정은 상대 경로를 사용하므로 저장소 하위 경로에서 앱을 서비스할 수 있습니다. `npm run build`로 만든 `dist/`를 GitHub Pages의 게시 대상으로 설정하세요. 이 저장소에는 자동 배포 워크플로가 포함되어 있지 않습니다.
+Vite 설정은 상대 경로를 사용하므로 저장소 하위 경로에서 앱을 서비스할 수 있습니다. `main` 브랜치에 푸시하면 `.github/workflows/deploy.yml`이 `dist/`를 빌드해 GitHub Pages에 배포합니다. 처음 사용할 때 저장소의 **Settings → Pages → Build and deployment → Source**를 `GitHub Actions`로 설정하세요. 필요하면 워크플로의 배포 브랜치를 저장소의 기본 브랜치에 맞춰 변경하세요.
 
 ## 프로젝트 구조
 
@@ -42,8 +42,10 @@ src/main.ts         화면 조작과 애니메이션
 src/geometry.ts     보로노이 셀, 인접 관계, 삼각분할 계산
 src/style.css       화면 스타일과 반응형 레이아웃
 vite.config.ts      Vite 및 Pages 상대 경로 설정
+.github/workflows/  GitHub Pages 자동 배포 워크플로
 ```
 
 ## 라이선스
 
 [PolyForm Noncommercial License 1.0.0](LICENSE)을 따릅니다.
+
