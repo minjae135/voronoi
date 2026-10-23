@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f6fa" />
+    <meta name="description" content="생성점에서 퍼지는 파동으로 보로노이 다이어그램을 살펴보세요." />
+    <title>보로노이 탐험실</title>
+  </head>
+  <body>
+    <div id="app">
+      <aside class="sidebar" aria-label="시각화 조작 메뉴">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div><p class="eyebrow">MATH FESTIVAL · INTERACTIVE</p><h1>보로노이<br /><span>탐험실</span></h1></div>
+        </div>
+        <p class="intro">가까운 점을 찾아<br />공간을 나눠 보세요.</p>
+        <section class="control-section" aria-labelledby="point-heading">
+          <div class="section-heading"><span class="step-number">01</span><h2 id="point-heading">생성점 만들기</h2></div>
+          <button id="point-mode" class="point-button" type="button" aria-pressed="false"><span class="point-button-icon" aria-hidden="true">＋</span><span id="point-button-label">생성점 찍기</span><span class="toggle-indicator" aria-hidden="true"></span></button>
+          <p id="point-hint" class="control-hint">버튼을 켠 뒤 오른쪽 화면을 눌러 보세요.</p>
+          <div class="point-count-row"><span>생성점</span><strong id="point-count">0</strong></div>
+        </section>
+        <section class="control-section animation-section" aria-labelledby="animation-heading">
+          <div class="section-heading"><span class="step-number">02</span><h2 id="animation-heading">파동 관찰하기</h2></div>
+          <button id="play-button" class="play-button" type="button" disabled><span id="play-icon" class="play-icon" aria-hidden="true">▶</span><span id="play-label">애니메이션 재생</span></button>
+          <p id="animation-hint" class="control-hint">점이 생기면 원형 파동을 재생할 수 있어요.</p>
+        </section>
+        <section class="control-section layers-section" aria-labelledby="layers-heading">
+          <div class="section-heading"><span class="step-number">03</span><h2 id="layers-heading">도형 겹쳐 보기</h2></div>
+          <label class="check-row"><input id="triangulation-toggle" type="checkbox" /><span class="custom-check" aria-hidden="true"></span><span class="check-copy"><strong>삼각형</strong><small>델로네 삼각분할</small></span><span class="layer-swatch triangle-swatch" aria-hidden="true"></span></label>
+          <label class="check-row"><input id="bisector-toggle" type="checkbox" /><span class="custom-check" aria-hidden="true"></span><span class="check-copy"><strong>수직이등분선</strong><small>두 점에서 같은 거리</small></span><span class="layer-swatch bisector-swatch" aria-hidden="true"></span></label>
+          <div id="bisector-mode-wrap" class="mode-select-wrap" hidden><label for="bisector-mode">표시할 점 쌍</label><select id="bisector-mode"><option value="adjacent">인접한 영역의 점 쌍</option><option value="all">모든 점 쌍</option></select></div>
+        </section>
+        <div class="sidebar-bottom"><div class="tip-card"><span class="tip-icon" aria-hidden="true">✳</span><p><strong>알고 있나요?</strong><br />각 영역 안의 모든 위치는<br />같은 생성점과 가장 가까워요.</p></div><div class="sidebar-foot"><span class="live-dot"></span> 직접 움직이며 탐구하기</div></div>
+      </aside>
+      <main class="workspace">
+        <header class="workspace-header"><div><p class="eyebrow workspace-eyebrow">VORONOI DIAGRAM</p><h2>가장 가까운 점의 영역</h2></div><div class="header-badge"><span class="badge-dot"></span> 인터랙티브 시각화</div></header>
+        <section class="stage-card" aria-label="보로노이 다이어그램 시각화">
+          <div class="stage-topline"><div class="stage-caption"><span class="caption-marker" aria-hidden="true"></span><span id="stage-caption">생성점을 놓아 보세요</span></div><div id="stage-count" class="stage-count">0 SITES</div></div>
+          <div class="diagram-wrap" id="diagram-wrap">
+            <svg id="diagram" class="diagram" viewBox="0 0 1000 680" role="img" aria-label="생성점을 추가하면 보로노이 다이어그램이 표시됩니다." tabindex="0"><defs><pattern id="dot-grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#dce2eb" /></pattern></defs><rect class="grid-background" width="1000" height="680" fill="url(#dot-grid)" /></svg>
+            <div id="empty-prompt" class="empty-prompt"><div class="empty-orbit" aria-hidden="true"><span></span><i></i><b></b></div><strong>화면이 준비됐어요</strong><span>왼쪽에서 <em>생성점 찍기</em>를 켜고<br />원하는 곳을 눌러 보세요.</span></div>
+            <div class="axis-label axis-label-x" aria-hidden="true">공간을 가까움으로 나누기</div><div class="axis-label axis-label-y" aria-hidden="true">DISTANCE FIELD</div>
+          </div>
+          <footer class="stage-footer"><span class="legend-item"><i class="legend-point" aria-hidden="true"></i> 생성점</span><span class="legend-item"><i class="legend-cell" aria-hidden="true"></i> 가장 가까운 영역</span><span id="stage-status" class="stage-status"><span class="status-dot"></span> 점 추가 대기 중</span></footer>
+        </section>
+        <p class="workspace-note">각 색 영역은 한 생성점에 더 가까운 위치들을 모은 곳이에요.</p>
+      </main>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
