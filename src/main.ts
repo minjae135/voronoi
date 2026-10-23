@@ -13,6 +13,7 @@ const pointButtonLabel = document.querySelector<HTMLSpanElement>('#point-button-
 const pointHint = document.querySelector<HTMLParagraphElement>('#point-hint')!;
 const pointCount = document.querySelector<HTMLElement>('#point-count')!;
 const playButton = document.querySelector<HTMLButtonElement>('#play-button')!;
+const stopButton = document.querySelector<HTMLButtonElement>('#stop-button')!;
 const playLabel = document.querySelector<HTMLSpanElement>('#play-label')!;
 const playIcon = document.querySelector<HTMLSpanElement>('#play-icon')!;
 const animationHint = document.querySelector<HTMLParagraphElement>('#animation-hint')!;
@@ -177,17 +178,27 @@ function togglePlayback(): void {
   }
 }
 
+function stopPlayback(): void {
+  if (animationState === 'idle') return;
+  stopAnimation();
+  animationState = 'idle';
+  animationElapsed = 0;
+  updateControls();
+  render();
+}
+
 function updateControls(): void {
   updatePointHint();
   pointCount.textContent = String(points.length);
   stageCount.textContent = `${points.length} ${points.length === 1 ? 'SITE' : 'SITES'}`;
   playButton.disabled = points.length === 0;
+  stopButton.disabled = points.length === 0 || animationState === 'idle';
   bisectorModeWrap.hidden = !bisectorToggle.checked;
   emptyPrompt.hidden = points.length > 0;
   triangulationLegend.hidden = !triangulationToggle.checked;
   if (animationState === 'running') {
     playLabel.textContent = '일시정지'; playIcon.textContent = 'Ⅱ';
-    animationHint.textContent = '파동이 경계에 닿으면 멈춰요.';
+    animationHint.textContent = '파동이 각 영역의 경계에서 만나요.';
   } else if (animationState === 'paused') {
     playLabel.textContent = '이어 재생'; playIcon.textContent = '▶';
     animationHint.textContent = '잠시 멈췄어요. 이어서 볼 수 있어요.';
@@ -196,7 +207,7 @@ function updateControls(): void {
     animationHint.textContent = '파동이 모든 영역을 채웠어요.';
   } else {
     playLabel.textContent = '애니메이션 재생'; playIcon.textContent = '▶';
-    animationHint.textContent = points.length === 0 ? '점이 생기면 원형 파동을 재생할 수 있어요.' : '모든 점에서 파동이 동시에 퍼져요.';
+    animationHint.textContent = points.length === 0 ? '점이 생기면 원형 파동을 재생할 수 있어요.' : '재생은 동시에 시작하고, 중지는 처음으로 돌아가요.';
   }
   updateStageStatus();
 }
@@ -344,6 +355,7 @@ function pointLabel(index: number): string {
 
 pointModeButton.addEventListener('click', () => setPointMode(!pointModeActive));
 playButton.addEventListener('click', togglePlayback);
+stopButton.addEventListener('click', stopPlayback);
 triangulationToggle.addEventListener('change', () => { updateControls(); render(); });
 bisectorToggle.addEventListener('change', () => { updateControls(); render(); });
 bisectorMode.addEventListener('change', render);

@@ -23,7 +23,10 @@
         </section>
         <section class="control-section animation-section" aria-labelledby="animation-heading">
           <div class="section-heading"><span class="step-number">02</span><h2 id="animation-heading">파동 관찰하기</h2></div>
-          <button id="play-button" class="play-button" type="button" disabled><span id="play-icon" class="play-icon" aria-hidden="true">▶</span><span id="play-label">애니메이션 재생</span></button>
+          <div class="playback-controls">
+            <button id="play-button" class="play-button" type="button" disabled><span id="play-icon" class="play-icon" aria-hidden="true">▶</span><span id="play-label">애니메이션 재생</span></button>
+            <button id="stop-button" class="stop-button" type="button" disabled aria-label="파동을 중지하고 처음으로 되돌리기"><span aria-hidden="true">■</span><span>중지</span></button>
+          </div>
           <p id="animation-hint" class="control-hint">점이 생기면 원형 파동을 재생할 수 있어요.</p>
         </section>
         <section class="control-section layers-section" aria-labelledby="layers-heading">
