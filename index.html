@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f5f6fa" />
+    <meta name="theme-color" content="#fff8df" />
     <meta name="description" content="생성점에서 퍼지는 파동으로 보로노이 다이어그램을 살펴보세요." />
-    <title>보로노이 탐험실</title>
+    <title>보로노이 행운거북이 만들기</title>
   </head>
   <body>
     <div id="app">
       <aside class="sidebar" aria-label="시각화 조작 메뉴">
         <div class="brand">
           <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
-          <div><p class="eyebrow">MATH FESTIVAL · INTERACTIVE</p><h1>보로노이<br /><span>탐험실</span></h1></div>
+          <div><p class="eyebrow">2026 부산수학축전</p><h1>보로노이<br /><span>행운거북이</span></h1></div>
         </div>
-        <p class="intro">가까운 점을 찾아<br />공간을 나눠 보세요.</p>
+        <p class="intro">점을 콕콕 놓고<br />행운거북이를 완성해요!</p>
         <section class="control-section" aria-labelledby="point-heading">
           <div class="section-heading"><span class="step-number">01</span><h2 id="point-heading">생성점 만들기</h2></div>
           <button id="point-mode" class="point-button" type="button" aria-pressed="false"><span class="point-button-icon" aria-hidden="true">＋</span><span id="point-button-label">생성점 찍기</span><span class="toggle-indicator" aria-hidden="true"></span></button>
@@ -32,16 +32,29 @@
           <label class="check-row"><input id="bisector-toggle" type="checkbox" /><span class="custom-check" aria-hidden="true"></span><span class="check-copy"><strong>수직이등분선</strong><small>두 점에서 같은 거리</small></span><span class="layer-swatch bisector-swatch" aria-hidden="true"></span></label>
           <div id="bisector-mode-wrap" class="mode-select-wrap" hidden><label for="bisector-mode">표시할 점 쌍</label><select id="bisector-mode"><option value="adjacent">인접한 영역의 점 쌍</option><option value="all">모든 점 쌍</option></select></div>
         </section>
-        <div class="sidebar-bottom"><div class="tip-card"><span class="tip-icon" aria-hidden="true">✳</span><p><strong>알고 있나요?</strong><br />각 영역 안의 모든 위치는<br />같은 생성점과 가장 가까워요.</p></div><div class="sidebar-foot"><span class="live-dot"></span> 직접 움직이며 탐구하기</div></div>
+        <div class="sidebar-bottom"><div class="tip-card"><svg class="tip-turtle" viewBox="0 0 100 78" role="img" aria-label="보로노이 무늬의 초록 거북이">
+            <ellipse cx="23" cy="55" rx="9" ry="7" fill="#70c77e" stroke="#165a3c" stroke-width="2.5" />
+            <ellipse cx="45" cy="64" rx="9" ry="7" fill="#70c77e" stroke="#165a3c" stroke-width="2.5" />
+            <ellipse cx="61" cy="56" rx="9" ry="7" fill="#70c77e" stroke="#165a3c" stroke-width="2.5" />
+            <ellipse cx="43" cy="43" rx="31" ry="25" fill="#14965b" stroke="#174c37" stroke-width="3.5" />
+            <path d="M15 43 29 25 45 19 60 27 72 42 63 59 44 67 25 60Z" fill="#48b878" stroke="#e8f7cb" stroke-width="2" />
+            <path d="M29 25 44 40 45 19M44 40 60 27M44 40 25 60M44 40 63 59M29 25 44 40 60 27M25 60 44 40 63 59" fill="none" stroke="#e8f7cb" stroke-width="1.8" />
+            <path d="M61 31c10-12 22-11 28-2 5 8 0 19-10 21-8 1-14-4-15-10" fill="#fff0cc" stroke="#174c37" stroke-width="3" />
+            <circle cx="78" cy="32" r="2.5" fill="#25352b" />
+            <circle cx="87" cy="34" r="2.5" fill="#25352b" />
+            <circle cx="74" cy="39" r="2.5" fill="#ef8790" />
+            <path d="M78 42q5 5 10 0" fill="none" stroke="#25352b" stroke-width="1.8" stroke-linecap="round" />
+            <path d="M13 43 7 38M15 51 8 53" fill="none" stroke="#174c37" stroke-width="2.5" stroke-linecap="round" />
+          </svg><p><strong>알고 있나요?</strong><br />각 영역 안의 모든 위치는<br />같은 생성점과 가장 가까워요.</p></div><div class="sidebar-foot"><span class="live-dot"></span> 직접 움직이며 탐구하기</div></div>
       </aside>
       <main class="workspace">
-        <header class="workspace-header"><div><p class="eyebrow workspace-eyebrow">VORONOI DIAGRAM</p><h2>가장 가까운 점의 영역</h2></div><div class="header-badge"><span class="badge-dot"></span> 인터랙티브 시각화</div></header>
+        <header class="workspace-header"><div><p class="eyebrow workspace-eyebrow">2026 BUSAN MATH FESTIVAL</p><h2>보로노이 다이어그램</h2></div><div class="header-badge"><span class="badge-dot"></span> 행운거북이 만들기</div></header>
         <section class="stage-card" aria-label="보로노이 다이어그램 시각화">
           <div class="stage-topline"><div class="stage-caption"><span class="caption-marker" aria-hidden="true"></span><span id="stage-caption">생성점을 놓아 보세요</span></div><div id="stage-count" class="stage-count">0 SITES</div></div>
           <div class="diagram-wrap" id="diagram-wrap">
             <svg id="diagram" class="diagram" viewBox="0 0 1000 680" role="img" aria-label="생성점을 추가하면 보로노이 다이어그램이 표시됩니다." tabindex="0"><defs><pattern id="dot-grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#dce2eb" /></pattern></defs><rect class="grid-background" width="1000" height="680" fill="url(#dot-grid)" /></svg>
             <div id="empty-prompt" class="empty-prompt"><div class="empty-orbit" aria-hidden="true"><span></span><i></i><b></b></div><strong>화면이 준비됐어요</strong><span>왼쪽에서 <em>생성점 찍기</em>를 켜고<br />원하는 곳을 눌러 보세요.</span></div>
-            <div class="axis-label axis-label-x" aria-hidden="true">공간을 가까움으로 나누기</div><div class="axis-label axis-label-y" aria-hidden="true">DISTANCE FIELD</div>
+            <div class="axis-label axis-label-x" aria-hidden="true">공간을 가까움으로 나누기</div><div class="axis-label axis-label-y" aria-hidden="true">거리의 장</div>
           </div>
           <footer class="stage-footer">
             <span class="legend-item"><i class="legend-point" aria-hidden="true"></i> 생성점</span>

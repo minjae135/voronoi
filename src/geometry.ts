@@ -10,7 +10,7 @@ export interface Triangle { a: number; b: number; c: number }
 export interface Diagram { cells: Cell[]; boundaries: Segment[]; neighbors: Array<[number, number]>; triangles: Triangle[] }
 
 const EPSILON = 1e-8;
-const PALETTE = ['#77d6c4', '#ffc66d', '#8da9ff', '#ff91a4', '#c3a0f5', '#a8d96d', '#f49a62', '#72c9e8'];
+const PALETTE = ['#bde5a5', '#ffe08a', '#9fd2ed', '#f6afbd', '#c8afe8', '#8ed7b2', '#ffc28a', '#f0d66e'];
 
 export function buildDiagram(points: Point[], width: number, height: number): Diagram {
   if (points.length === 0) return { cells: [], boundaries: [], neighbors: [], triangles: [] };
