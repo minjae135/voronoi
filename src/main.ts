@@ -237,14 +237,18 @@ function updateStageStatus(): void {
 function render(): void {
   const progress = animationState === 'finished' ? 1 : Math.min(1, animationElapsed / ANIMATION_DURATION);
   const isAnimating = animationState === 'running' || animationState === 'paused';
+  const fadeRatio = Math.max(0, Math.min(1, (progress - 0.78) / 0.22));
+  const fadeProgress = fadeRatio * fadeRatio * (3 - 2 * fadeRatio);
+  const waveOpacity = 0.58 * (1 - fadeProgress);
+  const ringOpacity = 0.82 * (1 - fadeProgress);
   const radius = progress * maxWaveRadius;
   const cellFills = diagram.cells.map((cell) => {
     const path = polygonPath(cell.polygon);
     const clipId = `cell-clip-${cell.site.id}`;
-    const opacity = animationState === 'finished' ? 0.3 : isAnimating ? 0.04 : 0.24;
+    const opacity = 0.3;
     const wave = isAnimating
-      ? `<circle cx="${cell.site.x}" cy="${cell.site.y}" r="${radius}" fill="${cell.color}" fill-opacity="0.58" clip-path="url(#${clipId})" />
-         <circle class="wave-ring" cx="${cell.site.x}" cy="${cell.site.y}" r="${radius}" clip-path="url(#${clipId})" />`
+      ? `<circle cx="${cell.site.x}" cy="${cell.site.y}" r="${radius}" fill="${cell.color}" fill-opacity="${waveOpacity}" clip-path="url(#${clipId})" />
+         <circle class="wave-ring" cx="${cell.site.x}" cy="${cell.site.y}" r="${radius}" opacity="${ringOpacity}" clip-path="url(#${clipId})" />`
       : '';
     return `<path d="${path}" fill="${cell.color}" fill-opacity="${opacity}" />${wave}`;
   }).join('');
