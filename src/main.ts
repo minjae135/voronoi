@@ -14,6 +14,7 @@ const pointHint = document.querySelector<HTMLParagraphElement>('#point-hint')!;
 const pointCount = document.querySelector<HTMLElement>('#point-count')!;
 const playButton = document.querySelector<HTMLButtonElement>('#play-button')!;
 const stopButton = document.querySelector<HTMLButtonElement>('#stop-button')!;
+const animationSpeedInput = document.querySelector<HTMLInputElement>('#animation-speed')!;
 const playLabel = document.querySelector<HTMLSpanElement>('#play-label')!;
 const playIcon = document.querySelector<HTMLSpanElement>('#play-icon')!;
 const animationHint = document.querySelector<HTMLParagraphElement>('#animation-hint')!;
@@ -32,6 +33,7 @@ let nextPointId = 1;
 let pointModeActive = false;
 let animationState: AnimationState = 'idle';
 let animationElapsed = 0;
+let animationSpeed = 1;
 let lastFrameTime = 0;
 let animationFrame = 0;
 let draggingPointId: number | null = null;
@@ -144,10 +146,22 @@ function beginAnimation(): void {
   animationFrame = requestAnimationFrame(animate);
 }
 
+function setAnimationSpeed(): void {
+  const rawValue = animationSpeedInput.value.trim();
+  const requestedSpeed = Number(rawValue);
+  if (rawValue === '' || !Number.isFinite(requestedSpeed)) {
+    animationSpeedInput.value = String(animationSpeed);
+    return;
+  }
+  animationSpeed = Math.min(20, Math.max(0.25, requestedSpeed));
+  animationSpeedInput.value = String(animationSpeed);
+  animationSpeedInput.setAttribute('aria-valuetext', `${animationSpeed}배속`);
+}
+
 function animate(timestamp: number): void {
   if (animationState !== 'running') return;
   if (lastFrameTime === 0) lastFrameTime = timestamp;
-  else animationElapsed += timestamp - lastFrameTime;
+  else animationElapsed += (timestamp - lastFrameTime) * animationSpeed;
   lastFrameTime = timestamp;
   if (animationElapsed >= ANIMATION_DURATION) {
     animationElapsed = ANIMATION_DURATION;
@@ -360,6 +374,7 @@ function pointLabel(index: number): string {
 pointModeButton.addEventListener('click', () => setPointMode(!pointModeActive));
 playButton.addEventListener('click', togglePlayback);
 stopButton.addEventListener('click', stopPlayback);
+animationSpeedInput.addEventListener('change', setAnimationSpeed);
 triangulationToggle.addEventListener('change', () => { updateControls(); render(); });
 bisectorToggle.addEventListener('change', () => { updateControls(); render(); });
 bisectorMode.addEventListener('change', render);

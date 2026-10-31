@@ -1617,3 +1617,54 @@ input:focus-visible + .custom-check,
     min-height: 40px;
   }
 }
+
+.speed-control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 5px 10px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e8dfc4;
+  border-radius: 13px;
+  background: #fffdf4;
+  color: #315740;
+  font-size: 12px;
+}
+
+.speed-control label {
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+}
+
+.speed-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #648064;
+  font: 12px 'DM Mono', monospace;
+}
+
+.speed-input-wrap input {
+  width: 68px;
+  height: 32px;
+  padding: 0 7px;
+  border: 1px solid #cddcbd;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #174b36;
+  font: 600 13px 'DM Mono', monospace;
+  text-align: center;
+}
+
+.speed-input-wrap input:focus-visible {
+  border-color: #168a53;
+  box-shadow: 0 0 0 3px #168a5322;
+}
+
+.speed-control small {
+  grid-column: 1 / -1;
+  color: #849078;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10px;
+}

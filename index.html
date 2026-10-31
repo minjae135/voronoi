@@ -27,6 +27,7 @@
             <button id="play-button" class="play-button" type="button" disabled><span id="play-icon" class="play-icon" aria-hidden="true">▶</span><span id="play-label">애니메이션 재생</span></button>
             <button id="stop-button" class="stop-button" type="button" disabled aria-label="파동을 중지하고 처음으로 되돌리기"><span aria-hidden="true">■</span><span>중지</span></button>
           </div>
+          <div class="speed-control"><label for="animation-speed">재생 속도</label><div class="speed-input-wrap"><input id="animation-speed" type="number" min="0.25" max="20" step="0.25" value="1" aria-describedby="speed-hint" /><span>배</span></div><small id="speed-hint">0.25 ~ 20배</small></div>
           <p id="animation-hint" class="control-hint">점이 생기면 원형 파동을 재생할 수 있어요.</p>
         </section>
         <section class="control-section layers-section" aria-labelledby="layers-heading">
