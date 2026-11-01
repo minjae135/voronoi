@@ -47,5 +47,5 @@ vite.config.ts      Vite 및 Pages 상대 경로 설정
 
 ## 라이선스
 
-[PolyForm Noncommercial License 1.0.0](LICENSE)을 따릅니다.
+이 저장소에서 직접 작성한 코드와 문서는 [MIT License](LICENSE)를 따릅니다. 외부 글꼴과 npm 패키지는 각 원저작자의 라이선스를 따릅니다.
 
