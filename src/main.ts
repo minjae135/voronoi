@@ -6,12 +6,12 @@ const HEIGHT = 680;
 const ANIMATION_DURATION = 5600;
 const MIN_POINT_SPACING = 13;
 type AnimationState = 'idle' | 'running' | 'paused' | 'finished';
+type PointMode = 'move' | 'create' | 'delete';
 
 const svg = document.querySelector<SVGSVGElement>('#diagram')!;
 const themeToggle = document.querySelector<HTMLInputElement>('#theme-toggle')!;
 const themeColorMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')!;
-const pointModeButton = document.querySelector<HTMLButtonElement>('#point-mode')!;
-const pointButtonLabel = document.querySelector<HTMLSpanElement>('#point-button-label')!;
+const pointModeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.point-mode-button'));
 const pointHint = document.querySelector<HTMLParagraphElement>('#point-hint')!;
 const pointCount = document.querySelector<HTMLElement>('#point-count')!;
 const playButton = document.querySelector<HTMLButtonElement>('#play-button')!;
@@ -32,7 +32,7 @@ const triangulationLegend = document.querySelector<HTMLSpanElement>('#triangulat
 
 let points: Point[] = [];
 let nextPointId = 1;
-let pointModeActive = false;
+let pointMode: PointMode = 'move';
 let animationState: AnimationState = 'idle';
 let animationElapsed = 0;
 let animationSpeed = 1;
@@ -50,23 +50,27 @@ function updateDiagram(): void {
   }, 1);
 }
 
-function setPointMode(active: boolean): void {
-  pointModeActive = active;
-  pointModeButton.setAttribute('aria-pressed', String(active));
-  pointButtonLabel.textContent = active ? '점 찍기 활성화됨' : '생성점 찍기';
-  svg.classList.toggle('is-placing', active);
+function setPointMode(mode: PointMode): void {
+  pointMode = mode;
+  pointModeButtons.forEach((button) => {
+    button.setAttribute('aria-pressed', String(button.dataset.pointMode === mode));
+  });
+  svg.classList.toggle('is-placing', mode === 'create');
+  svg.classList.toggle('is-removing', mode === 'delete');
   svg.classList.remove('is-near-site');
   updatePointHint();
   updateStageStatus();
 }
 
 function updatePointHint(): void {
-  if (pointModeActive) {
-    pointHint.textContent = '오른쪽 화면을 눌러 점을 추가하세요.';
+  if (pointMode === 'create') {
+    pointHint.textContent = '화면을 눌러 생성점을 추가하세요.';
+  } else if (pointMode === 'delete') {
+    pointHint.textContent = points.length > 0 ? '제거할 생성점을 누르세요.' : '제거할 생성점이 없어요.';
   } else if (points.length > 0) {
-    pointHint.textContent = '점 찍기 모드가 꺼져 있어요. 생성점을 끌어 옮길 수 있어요.';
+    pointHint.textContent = '생성점을 끌어 옮길 수 있어요.';
   } else {
-    pointHint.textContent = '버튼을 켠 뒤 오른쪽 화면을 눌러 보세요.';
+    pointHint.textContent = '생성 모드에서 생성점을 먼저 추가하세요.';
   }
 }
 
@@ -105,6 +109,17 @@ function addPoint(clientX: number, clientY: number): void {
   animationState = 'idle';
   animationElapsed = 0;
   points = [...points, { id: nextPointId++, x, y }];
+  updateDiagram();
+  updateControls();
+  render();
+}
+
+function removePoint(id: number): void {
+  if (!points.some((point) => point.id === id)) return;
+  stopAnimation();
+  animationState = 'idle';
+  animationElapsed = 0;
+  points = points.filter((point) => point.id !== id);
   updateDiagram();
   updateControls();
   render();
@@ -238,12 +253,15 @@ function updateStageStatus(): void {
   } else if (animationState === 'finished') {
     stageCaption.textContent = '영역이 완성됐어요';
     stageStatus.innerHTML = '<span class="status-dot is-done"></span> 영역 완성';
-  } else if (pointModeActive) {
+  } else if (pointMode === 'create') {
     stageCaption.textContent = '화면을 눌러 생성점을 놓으세요';
-    stageStatus.innerHTML = '<span class="status-dot is-active"></span> 점 찍기 활성';
+    stageStatus.innerHTML = '<span class="status-dot is-active"></span> 점 생성 모드';
+  } else if (pointMode === 'delete') {
+    stageCaption.textContent = points.length > 0 ? '제거할 생성점을 누르세요' : '제거할 생성점이 없어요';
+    stageStatus.innerHTML = '<span class="status-dot is-removing"></span> 점 제거 모드';
   } else if (points.length > 0) {
-    stageCaption.textContent = '생성점 사이의 영역';
-    stageStatus.innerHTML = '<span class="status-dot"></span> 재생 대기 중';
+    stageCaption.textContent = '생성점을 끌어 옮길 수 있어요';
+    stageStatus.innerHTML = '<span class="status-dot"></span> 점 이동 모드';
   } else {
     stageCaption.textContent = '생성점을 놓아 보세요';
     stageStatus.innerHTML = '<span class="status-dot"></span> 점 추가 대기 중';
@@ -373,8 +391,10 @@ function pointLabel(index: number): string {
   return label;
 }
 
-pointModeButton.addEventListener('click', () => setPointMode(!pointModeActive));
- themeToggle.addEventListener('change', () => {
+pointModeButtons.forEach((button) => {
+  button.addEventListener('click', () => setPointMode(button.dataset.pointMode as PointMode));
+});
+themeToggle.addEventListener('change', () => {
   const festivalThemeEnabled = themeToggle.checked;
   document.body.classList.toggle('festival-theme', festivalThemeEnabled);
   themeColorMeta.content = festivalThemeEnabled ? '#fff8df' : '#f3f5f9';
@@ -386,7 +406,7 @@ triangulationToggle.addEventListener('change', () => { updateControls(); render(
 bisectorToggle.addEventListener('change', () => { updateControls(); render(); });
 bisectorMode.addEventListener('change', render);
 svg.addEventListener('pointerdown', (event: PointerEvent) => {
-  if (pointModeActive) {
+  if (pointMode === 'create') {
     event.preventDefault();
     addPoint(event.clientX, event.clientY);
     return;
@@ -394,6 +414,10 @@ svg.addEventListener('pointerdown', (event: PointerEvent) => {
   const point = findPointAt(event.clientX, event.clientY);
   if (!point) return;
   event.preventDefault();
+  if (pointMode === 'delete') {
+    removePoint(point.id);
+    return;
+  }
   draggingPointId = point.id;
   svg.classList.add('is-dragging');
   svg.setPointerCapture(event.pointerId);
@@ -402,8 +426,9 @@ svg.addEventListener('pointermove', (event: PointerEvent) => {
   if (draggingPointId !== null) {
     event.preventDefault();
     movePoint(draggingPointId, event.clientX, event.clientY);
-  } else if (!pointModeActive) {
-    svg.classList.toggle('is-near-site', findPointAt(event.clientX, event.clientY) !== null);
+  } else {
+    const isNearPoint = pointMode !== 'create' && findPointAt(event.clientX, event.clientY) !== null;
+    svg.classList.toggle('is-near-site', isNearPoint);
   }
 });
 function finishPointDrag(event: PointerEvent): void {
@@ -416,7 +441,7 @@ svg.addEventListener('pointerup', finishPointDrag);
 svg.addEventListener('pointercancel', finishPointDrag);
 svg.addEventListener('lostpointercapture', finishPointDrag);
 svg.addEventListener('keydown', (event: KeyboardEvent) => {
-  if (!pointModeActive || (event.key !== 'Enter' && event.key !== ' ')) return;
+  if (pointMode !== 'create' || (event.key !== 'Enter' && event.key !== ' ')) return;
   event.preventDefault();
   const bounds = svg.getBoundingClientRect();
   addPoint(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);

@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f3f5f9" />
     <meta name="description" content="생성점에서 퍼지는 파동으로 보로노이 다이어그램을 살펴보세요." />
-    <title>보로노이 행운거북이 만들기</title>
+    <title>보로노이 탐험실</title>
   </head>
   <body>
     <div id="app">
       <aside class="sidebar" aria-label="시각화 조작 메뉴">
         <div class="brand">
           <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
-          <div><p class="eyebrow">보로노이 탐험실</p><h1>보로노이<br /><span>행운거북이</span></h1></div>
+          <div><p class="eyebrow">인터랙티브 시각화</p><h1>보로노이<br /><span>탐험실</span></h1></div>
         </div>
-        <p class="intro">점을 콕콕 놓고<br />행운거북이를 완성해요!</p>
-        <label class="theme-toggle"><span class="theme-toggle-copy"><strong>축전 테마</strong><small>행운거북이 디자인</small></span><input id="theme-toggle" class="theme-toggle-input" type="checkbox" role="switch" /></label>
+        <p class="intro">생성점을 놓고<br />가까운 영역을 관찰해요!</p>
+        <label class="theme-toggle"><span class="theme-toggle-copy"><strong>축전 테마</strong><small>포스터 스타일 보기</small></span><input id="theme-toggle" class="theme-toggle-input" type="checkbox" role="switch" /></label>
         <section class="control-section" aria-labelledby="point-heading">
-          <div class="section-heading"><span class="step-number">01</span><h2 id="point-heading">생성점 만들기</h2></div>
-          <button id="point-mode" class="point-button" type="button" aria-pressed="false"><span class="point-button-icon" aria-hidden="true">＋</span><span id="point-button-label">생성점 찍기</span><span class="toggle-indicator" aria-hidden="true"></span></button>
-          <p id="point-hint" class="control-hint">버튼을 켠 뒤 오른쪽 화면을 눌러 보세요.</p>
+          <div class="section-heading"><span class="step-number">01</span><h2 id="point-heading">생성점 조작</h2></div>
+          <div class="point-mode-selector" role="group" aria-label="생성점 조작 모드">
+            <button class="point-mode-button" type="button" data-point-mode="move" aria-label="생성점 이동" aria-pressed="true"><span class="point-mode-icon" aria-hidden="true">↔</span><span>이동</span></button>
+            <button class="point-mode-button" type="button" data-point-mode="create" aria-label="생성점 생성" aria-pressed="false"><span class="point-mode-icon" aria-hidden="true">＋</span><span>생성</span></button>
+            <button class="point-mode-button" type="button" data-point-mode="delete" aria-label="생성점 제거" aria-pressed="false"><span class="point-mode-icon" aria-hidden="true">−</span><span>제거</span></button>
+          </div>
+          <p id="point-hint" class="control-hint">생성점을 끌어 옮길 수 있어요.</p>
           <div class="point-count-row"><span>생성점</span><strong id="point-count">0</strong></div>
         </section>
         <section class="control-section animation-section" aria-labelledby="animation-heading">
@@ -40,7 +44,7 @@
         <div class="sidebar-bottom"><div class="sidebar-foot"><span class="live-dot"></span> 직접 움직이며 탐구하기</div></div>
       </aside>
       <main class="workspace">
-        <header class="workspace-header"><div><p class="eyebrow workspace-eyebrow">INTERACTIVE VORONOI DIAGRAM</p><h2>보로노이 다이어그램</h2></div><div class="header-badge"><span class="badge-dot"></span> 행운거북이 만들기</div></header>
+        <header class="workspace-header"><div><p class="eyebrow workspace-eyebrow">INTERACTIVE VORONOI DIAGRAM</p><h2>보로노이 다이어그램</h2></div><div class="header-badge"><span class="badge-dot"></span> 생성점으로 영역 나누기</div></header>
         <section class="stage-card" aria-label="보로노이 다이어그램 시각화">
           <div class="stage-topline"><div class="stage-caption"><span class="caption-marker" aria-hidden="true"></span><span id="stage-caption">생성점을 놓아 보세요</span></div><div id="stage-count" class="stage-count">0 SITES</div></div>
           <div class="diagram-wrap" id="diagram-wrap">
