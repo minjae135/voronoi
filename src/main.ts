@@ -8,6 +8,8 @@ const MIN_POINT_SPACING = 13;
 type AnimationState = 'idle' | 'running' | 'paused' | 'finished';
 
 const svg = document.querySelector<SVGSVGElement>('#diagram')!;
+const themeToggle = document.querySelector<HTMLInputElement>('#theme-toggle')!;
+const themeColorMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')!;
 const pointModeButton = document.querySelector<HTMLButtonElement>('#point-mode')!;
 const pointButtonLabel = document.querySelector<HTMLSpanElement>('#point-button-label')!;
 const pointHint = document.querySelector<HTMLParagraphElement>('#point-hint')!;
@@ -372,6 +374,11 @@ function pointLabel(index: number): string {
 }
 
 pointModeButton.addEventListener('click', () => setPointMode(!pointModeActive));
+ themeToggle.addEventListener('change', () => {
+  const festivalThemeEnabled = themeToggle.checked;
+  document.body.classList.toggle('festival-theme', festivalThemeEnabled);
+  themeColorMeta.content = festivalThemeEnabled ? '#fff8df' : '#f3f5f9';
+});
 playButton.addEventListener('click', togglePlayback);
 stopButton.addEventListener('click', stopPlayback);
 animationSpeedInput.addEventListener('change', setAnimationSpeed);
